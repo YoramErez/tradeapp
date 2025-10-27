@@ -152,6 +152,15 @@ export class ListingsService {
   }
 
   async likeListing(listingId: string, userId: string) {
+    // Get the listing first
+    const listing = await prisma.listing.findUnique({
+      where: { id: listingId },
+    });
+
+    if (!listing) {
+      throw new Error('Listing not found');
+    }
+
     // Check if already liked
     const existing = await prisma.like.findFirst({
       where: {
