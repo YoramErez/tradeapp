@@ -7,7 +7,7 @@ set -e
 
 # Configuration - UPDATE THESE!
 SERVER_USER="root"  # Change if different
-SERVER_HOST=""      # Enter your Contabo IP
+SERVER_HOST="207.180.246.111"      # Enter your Contabo IP
 SERVER_PATH="/var/www/tradeapp"
 
 # Colors
