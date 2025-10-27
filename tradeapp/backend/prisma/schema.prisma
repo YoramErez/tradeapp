@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  emailVerified   Boolean   @default(false)
+  passwordHash    String?
+  name            String?
+  phone           String?
+  city            String?
+  country         String?
+  avatarURL       String?
+  bio             String?
+  
+  // Reputation & Trust
+  reputation      Float     @default(0)
+  trustScore      Int       @default(100)
+  isVerified      Boolean   @default(false)
+  
+  // Relationships
+  listings        Listing[]
+  likesGiven      Like[]    @relation("LikesGiven")
+  likesReceived   Like[]    @relation("LikesReceived")
+  matchesUserA    Match[]   @relation("UserA")
+  matchesUserB    Match[]   @relation("UserB")
+  swapsCreated    Swap[]    @relation("SwapCreator")
+  swapsReceived   Swap[]    @relation("SwapReceiver")
+  ratingsGiven    Rating[]  @relation("Rater")
+  ratingsReceived Rating[]  @relation("Ratee")
+  reportsReceived Report[]  @relation("ReportedUser")
+  reportsMade     Report[]  @relation("Reporter")
+  blocked         BlockedUser[] @relation("Blocker")
+  blockedBy       BlockedUser[] @relation("Blocked")
+  conversationsA  Conversation[] @relation("ConversationUserA")
+  conversationsB  Conversation[] @relation("ConversationUserB")
+  messages        Message[]  @relation("MessageSender")
+  notifications   Notification[]
+  sessions        Session[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([city, country])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([token])
+  @@index([userId])
+}
+
+model Listing {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String
+  category    String
+  condition   String   // New, Good, Used, For parts
+  photoURLs   String? // JSON array stored as string
+  status      String   @default("active") // active, pending, completed, deleted
+  
+  // Location
+  city        String?
+  country     String?
+  latitude    Float?
+  longitude   Float?
+  
+  // Relationships
+  owner       User     @relation(fields: [userId], references: [id])
+  likes       Like[]
+  matches     Match[]  @relation("MatchListingA")
+  matchesB    Match[]  @relation("MatchListingB")
+  swaps       Swap[]   @relation("SwapListingA")
+  swapsB      Swap[]   @relation("SwapListingB")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+  @@index([city, country])
+  @@index([category])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  fromUserId String
+  toUserId   String
+  listingId  String
+  createdAt DateTime @default(now())
+  
+  fromUser  User     @relation("LikesGiven", fields: [fromUserId], references: [id])
+  toUser    User     @relation("LikesReceived", fields: [toUserId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  
+  @@unique([fromUserId, listingId])
+  @@index([fromUserId])
+  @@index([toUserId])
+}
+
+model Match {
+  id        String    @id @default(uuid())
+  userAId   String
+  userBId   String
+  listingAId String?
+  listingBId String?
+  status    String    @default("pending") // pending, accepted, declined, cancelled
+  createdAt DateTime  @default(now())
+  
+  userA     User      @relation("UserA", fields: [userAId], references: [id])
+  userB     User      @relation("UserB", fields: [userBId], references: [id])
+  listingA  Listing?  @relation("MatchListingA", fields: [listingAId], references: [id])
+  listingB  Listing?  @relation("MatchListingB", fields: [listingBId], references: [id])
+  
+  swap      Swap?
+  
+  @@index([userAId, userBId])
+  @@index([status])
+}
+
+model Swap {
+  id              String    @id @default(uuid())
+  matchId         String    @unique
+  fromListingId   String
+  toListingId     String
+  fromUserId      String
+  toUserId        String
+  
+  status          String    @default("created") // created, awaitingPayment, enabled, shipped, completed, cancelled
+  feePerUser      Float
+  shippingPerUser Float
+  
+  // Addresses (revealed after payment)
+  addressA        String?
+  addressB        String?
+  trackingA       String?
+  trackingB       String?
+  
+  // Payment tracking
+  paymentA        Boolean   @default(false)
+  paymentB        Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  match           Match     @relation(fields: [matchId], references: [id])
+  fromListing     Listing   @relation("SwapListingA", fields: [fromListingId], references: [id])
+  toListing       Listing   @relation("SwapListingB", fields: [toListingId], references: [id])
+  fromUser        User      @relation("SwapCreator", fields: [fromUserId], references: [id])
+  toUser          User      @relation("SwapReceiver", fields: [toUserId], references: [id])
+  ratings         Rating[]
+  conversations   Conversation[]
+  
+  @@index([fromUserId, toUserId])
+  @@index([status])
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  swapId    String
+  raterId   String
+  rateeId   String
+  score     Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+  
+  swap      Swap     @relation(fields: [swapId], references: [id])
+  rater     User     @relation("Rater", fields: [raterId], references: [id])
+  ratee     User     @relation("Ratee", fields: [rateeId], references: [id])
+  
+  @@unique([swapId, raterId])
+  @@index([rateeId])
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  reporterId  String
+  reportedId  String
+  type        String   // user, listing, swap
+  reason      String
+  description String?
+  status      String   @default("pending") // pending, reviewed, resolved, dismissed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  reporter    User     @relation("Reporter", fields: [reporterId], references: [id])
+  reported    User     @relation("ReportedUser", fields: [reportedId], references: [id])
+  
+  @@index([reportedId])
+  @@index([status])
+}
+
+model BlockedUser {
+  id        String   @id @default(uuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+  
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
+  
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  userAId   String
+  userBId   String
+  swapId    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  userA     User      @relation("ConversationUserA", fields: [userAId], references: [id])
+  userB     User      @relation("ConversationUserB", fields: [userBId], references: [id])
+  messages  Message[]
+  swap      Swap?     @relation(fields: [swapId], references: [id])
+  
+  @@index([userAId, userBId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender         User         @relation("MessageSender", fields: [senderId], references: [id])
+  
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // like, match, swap, message, rating
+  title     String
+  content   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  
+  @@index([userId, isRead])
+}

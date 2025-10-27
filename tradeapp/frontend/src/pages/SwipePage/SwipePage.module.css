@@ -1,0 +1,266 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swipeContainer {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+}
+
+.cardStack {
+  position: relative;
+  height: 600px;
+  width: 100%;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  cursor: grab;
+  transition: transform 0.2s ease-out;
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.cardImage {
+  width: 100%;
+  height: 50%;
+  object-fit: cover;
+}
+
+.noImageContainer {
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noImageText {
+  color: white;
+  font-size: 3rem;
+}
+
+.cardContent {
+  padding: 1.5rem;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.category {
+  font-size: 0.75rem;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+.cardDescription {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardOwner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ownerAvatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #e5e7eb;
+}
+
+.ownerName {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.actionButton {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dislikeButton {
+  background: white;
+}
+
+.dislikeButton:hover {
+  background: #f3f4f6;
+  transform: scale(1.1);
+}
+
+.likeButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.likeButton:hover {
+  transform: scale(1.1);
+}
+
+.actionIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.dislikeIcon {
+  color: #dc2626;
+}
+
+.emptyState {
+  text-align: center;
+  color: white;
+  padding: 2rem;
+}
+
+.emptyIcon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.emptyText {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Card animation states */
+.cardEntering {
+  animation: cardEnter 0.3s ease-out;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.cardExiting {
+  animation: cardExit 0.3s ease-out;
+}
+
+@keyframes cardExit {
+  to {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+}
+
+/* Swipe animations */
+.swipeLeft {
+  animation: swipeLeftAnimation 0.4s ease-out forwards;
+}
+
+.swipeRight {
+  animation: swipeRightAnimation 0.4s ease-out forwards;
+}
+
+@keyframes swipeLeftAnimation {
+  to {
+    transform: translateX(-200%) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeRightAnimation {
+  to {
+    transform: translateX(200%) rotate(30deg);
+    opacity: 0;
+  }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.overlayText {
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 0.5rem 1.5rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.overlayLike {
+  border: 4px solid #10b981;
+  color: #10b981;
+}
+
+.overlayPass {
+  border: 4px solid #dc2626;
+  color: #dc2626;
+}
+

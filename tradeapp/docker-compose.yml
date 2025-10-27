@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: tradeapp-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tradeapp}
+      POSTGRES_USER: ${DB_USER:-tradeapp}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - tradeapp-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tradeapp-backend
+    restart: always
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER:-tradeapp}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-tradeapp}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    networks:
+      - tradeapp-network
+    command: sh -c "npx prisma migrate deploy && npm start"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tradeapp-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tradeapp-network
+
+networks:
+  tradeapp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
