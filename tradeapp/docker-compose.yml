@@ -6,9 +6,9 @@ services:
     container_name: tradeapp-db
     restart: always
     environment:
-      POSTGRES_DB: ${DB_NAME:-tradeapp}
-      POSTGRES_USER: ${DB_USER:-tradeapp}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: tradeapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tradeapp2024
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -25,7 +25,7 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://postgres:tradeapp2024@tradeapp-db:5432/tradeapp
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: super_secret_jwt_key_change_this_to_random_string
       PORT: 4000
     ports:
       - "4000:4000"
