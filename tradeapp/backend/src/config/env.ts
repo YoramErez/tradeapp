@@ -4,7 +4,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().default('4000'),
   DATABASE_URL: z.string(),
-  JWT_SECRET: z.string(),
+  JWT_SECRET: z.string().default('fallback_secret_key_minimum_32_characters_long'),
   JWT_EXPIRES_IN: z.string().optional().default('7d'),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
