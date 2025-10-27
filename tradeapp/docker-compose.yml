@@ -24,7 +24,7 @@ services:
     restart: always
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${DB_USER:-tradeapp}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-tradeapp}
+      DATABASE_URL: postgresql://postgres:tradeapp2024@tradeapp-db:5432/tradeapp
       JWT_SECRET: ${JWT_SECRET}
       PORT: 4000
     ports:
