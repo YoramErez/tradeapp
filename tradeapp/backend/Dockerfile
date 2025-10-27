@@ -6,13 +6,14 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 RUN npm ci
+
+COPY . .
+
 RUN npx prisma generate
 
 COPY . .
 
-RUN npm run build
-
 EXPOSE 4000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
 
