@@ -156,7 +156,7 @@ export class ListingsService {
     const existing = await prisma.like.findFirst({
       where: {
         listingId,
-        userId,
+        fromUserId: userId,
       },
     });
 
@@ -168,7 +168,8 @@ export class ListingsService {
     const like = await prisma.like.create({
       data: {
         listingId,
-        userId,
+        fromUserId: userId,
+        toUserId: listing.userId, // Who is receiving the like
       },
       include: {
         listing: {
