@@ -7,8 +7,6 @@ COPY prisma ./prisma/
 
 RUN npm ci
 
-COPY . .
-
 RUN npx prisma generate
 
 COPY . .
