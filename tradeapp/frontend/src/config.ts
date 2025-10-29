@@ -1,7 +1,22 @@
-// Production API URL
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
-
-// Development API URL
+// Detect if we're in production
 const isDev = import.meta.env.DEV;
-export const BASE_API_URL = isDev ? 'http://localhost:4000/api' : API_URL;
+const isProduction = import.meta.env.PROD;
+
+// Auto-detect API URL based on environment
+const getApiUrl = () => {
+  // If VITE_API_URL is explicitly set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In production, use same origin (relative URL)
+  if (isProduction) {
+    return '/api'; // Relative URL - will use same domain
+  }
+  
+  // In development, use localhost
+  return 'http://localhost:4000/api';
+};
+
+export const BASE_API_URL = getApiUrl();
 
