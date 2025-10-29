@@ -33,7 +33,7 @@ services:
       - postgres
     networks:
       - tradeapp-network
-    command: sh -c "npx prisma migrate deploy || true && npm run dev"
+    command: sh -c "npx prisma migrate deploy || true && npm start"
 
   frontend:
     build:
