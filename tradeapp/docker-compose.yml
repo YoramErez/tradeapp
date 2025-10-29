@@ -6,15 +6,15 @@ services:
     container_name: tradebus-db
     restart: always
     environment:
-      POSTGRES_DB: tradeapp
+      POSTGRES_DB: tradebus
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: tradeapp2024
+      POSTGRES_PASSWORD: tradebus2024
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - tradeapp-network
+      - tradebus-network
 
   backend:
     build:
@@ -24,7 +24,7 @@ services:
     restart: always
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:tradeapp2024@tradebus-db:5432/tradeapp
+      DATABASE_URL: postgresql://postgres:tradebus2024@tradebus-db:5432/tradebus
       JWT_SECRET: super_secret_jwt_key_change_this_to_random_string
       PORT: 4000
     ports:
@@ -32,7 +32,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - tradeapp-network
+      - tradebus-network
     command: sh -c "npx prisma migrate deploy || true && npm start"
 
   frontend:
@@ -46,10 +46,10 @@ services:
     depends_on:
       - backend
     networks:
-      - tradeapp-network
+      - tradebus-network
 
 networks:
-  tradeapp-network:
+  tradebus-network:
     driver: bridge
 
 volumes:

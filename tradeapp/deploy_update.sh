@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TradeApp - Update Server Script
+# TradeBus - Update Server Script
 # Use this after initial setup to update server with latest changes
 
 set -e
@@ -8,7 +8,7 @@ set -e
 # Configuration - UPDATE THESE!
 SERVER_USER="root"  # Change if different
 SERVER_HOST="207.180.246.111"      # Enter your Contabo IP
-SERVER_PATH="/var/www/tradeapp"
+SERVER_PATH="/var/www/tradebus/tradeapp"
 
 # Colors
 RED='\033[0;31m'
@@ -16,7 +16,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo -e "${GREEN}=== TradeApp Server Update ===${NC}"
+echo -e "${GREEN}=== TradeBus Server Update ===${NC}"
 
 # Check if server details are provided
 if [ -z "$SERVER_HOST" ]; then
@@ -31,7 +31,7 @@ echo -e "${YELLOW}Connecting to server to update...${NC}"
 ssh ${SERVER_USER}@${SERVER_HOST} << 'REMOTE_SCRIPT'
 set -e
 
-cd /var/www/tradeapp
+cd /var/www/tradebus/tradeapp
 
 echo "📥 Pulling latest changes from GitHub..."
 git pull origin main
