@@ -1,6 +1,6 @@
-FROM node:20-alpine
+FROM node:20-alpine3.21
 
-RUN apk add --no-cache openssl libc6-compat
+RUN apk add --no-cache openssl1.1-compat libc6-compat
 
 WORKDIR /app
 
