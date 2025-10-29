@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# TradeApp - Server Setup Script
-# This script sets up your TradeApp on Contabo server
+# TradeBus - Server Setup Script
+# This script sets up your TradeBus on Contabo server
 
 set -e
 
 # Configuration - UPDATE THESE!
 SERVER_USER="root"  # Change if different
 SERVER_HOST="207.180.246.111"      # Enter your Contabo IP
-SERVER_PATH="/var/www/tradeapp"
+SERVER_PATH="/var/www/tradebus/tradeapp"
 GITHUB_REPO="https://github.com/YoramErez/tradeapp.git"
 
 # Colors
@@ -17,7 +17,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo -e "${GREEN}=== TradeApp Server Setup ===${NC}"
+echo -e "${GREEN}=== TradeBus Server Setup ===${NC}"
 
 # Check if server details are provided
 if [ -z "$SERVER_HOST" ]; then
@@ -40,8 +40,10 @@ echo "🔧 Starting Docker..."
 systemctl start docker
 systemctl enable docker
 
-echo "📥 Cloning TradeApp from GitHub..."
+echo "📥 Cloning TradeBus from GitHub..."
 cd /var/www
+mkdir -p tradebus
+cd tradebus
 rm -rf tradeapp  # Remove old version if exists
 git clone https://github.com/YoramErez/tradeapp.git
 cd tradeapp
@@ -54,15 +56,15 @@ if [ -f .env.example ]; then
 fi
 
 echo "🚀 Building and starting containers..."
-cd /var/www/tradeapp
+cd /var/www/tradebus/tradeapp
 docker-compose up -d --build
 
 echo "✅ Setup complete!"
 echo ""
 echo "Next steps:"
 echo "1. SSH to server: ssh root@your_server"
-echo "2. Edit .env: cd /var/www/tradeapp/backend && nano .env"
-echo "3. Restart: cd /var/www/tradeapp && docker-compose restart"
+echo "2. Edit .env: cd /var/www/tradebus/tradeapp/backend && nano .env"
+echo "3. Restart: cd /var/www/tradebus/tradeapp && docker-compose restart"
 echo ""
 echo "Check logs: docker-compose logs -f"
 

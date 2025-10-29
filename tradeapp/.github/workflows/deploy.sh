@@ -2,7 +2,7 @@
 
 # Simple deploy script for server
 
-cd /var/www/tradeapp || exit 1
+cd /var/www/tradebus/tradeapp || exit 1
 
 # Pull latest changes
 git pull origin main

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TradeApp - Automated Deploy Script
+# TradeBus - Automated Deploy Script
 # This script uploads your local changes to the server
 
 set -e
@@ -11,7 +11,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}=== TradeApp Deploy Script ===${NC}"
+echo -e "${GREEN}=== TradeBus Deploy Script ===${NC}"
 
 # Check if .env exists
 if [ ! -f "backend/.env" ]; then
