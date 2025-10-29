@@ -152,11 +152,28 @@ export class ListingsService {
   }
 
   async likeListing(listingId: string, userId: string) {
+    // Get the listing to know who owns it
+    const listing = await prisma.listing.findUnique({
+      where: { id: listingId },
+      include: { owner: true },
+    });
+
+    if (!listing) {
+      throw new NotFoundError('Listing not found');
+    }
+
+    const listingOwnerId = listing.userId;
+
+    // Can't like your own listing
+    if (listingOwnerId === userId) {
+      throw new Error('You cannot like your own listing');
+    }
+
     // Check if already liked
     const existing = await prisma.like.findFirst({
       where: {
         listingId,
-        userId,
+        fromUserId: userId,
       },
     });
 
@@ -164,22 +181,124 @@ export class ListingsService {
       return { alreadyLiked: true };
     }
 
-    // Create like
+    // Create like (fromUserId = person who liked, toUserId = owner of listing)
     const like = await prisma.like.create({
       data: {
         listingId,
-        userId,
+        fromUserId: userId,
+        toUserId: listingOwnerId,
       },
       include: {
         listing: {
           include: {
-            owner: true,
+            owner: {
+              select: {
+                id: true,
+                name: true,
+                avatarURL: true,
+                city: true,
+                country: true,
+                reputation: true,
+              },
+            },
+          },
+        },
+        fromUser: {
+          select: {
+            id: true,
+            name: true,
+            avatarURL: true,
           },
         },
       },
     });
 
-    return like;
+    // Check for mutual likes to create a match
+    // A match happens when:
+    // - User A (current user) likes User B's listing (listingOwnerId)
+    // - User B (listing owner) also likes one of User A's listings
+    
+    // Find if the listing owner has liked any of the current user's listings
+    const userListings = await prisma.listing.findMany({
+      where: {
+        userId: userId,
+        status: 'active',
+      },
+      select: { id: true },
+    });
+
+    const userListingIds = userListings.map(l => l.id);
+
+    let match = null;
+    if (userListingIds.length > 0) {
+      const mutualLike = await prisma.like.findFirst({
+        where: {
+          fromUserId: listingOwnerId, // Owner of this listing
+          toUserId: userId, // Person who just liked (owner of the other listing)
+          listingId: {
+            in: userListingIds, // One of the current user's listings
+          },
+        },
+        include: {
+          listing: true,
+        },
+      });
+
+      if (mutualLike) {
+        // Check if match already exists
+        const existingMatch = await prisma.match.findFirst({
+          where: {
+            OR: [
+              {
+                userAId: userId,
+                userBId: listingOwnerId,
+              },
+              {
+                userAId: listingOwnerId,
+                userBId: userId,
+              },
+            ],
+          },
+        });
+
+        if (!existingMatch) {
+          // Create a new match
+          match = await prisma.match.create({
+            data: {
+              userAId: userId,
+              userBId: listingOwnerId,
+              listingAId: listingId,
+              listingBId: mutualLike.listingId,
+              status: 'pending',
+            },
+            include: {
+              userA: {
+                select: {
+                  id: true,
+                  name: true,
+                  avatarURL: true,
+                  city: true,
+                  country: true,
+                },
+              },
+              userB: {
+                select: {
+                  id: true,
+                  name: true,
+                  avatarURL: true,
+                  city: true,
+                  country: true,
+                },
+              },
+              listingA: true,
+              listingB: true,
+            },
+          });
+        }
+      }
+    }
+
+    return { like, match };
   }
 }
 

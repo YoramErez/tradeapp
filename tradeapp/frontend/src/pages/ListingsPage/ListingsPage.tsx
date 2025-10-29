@@ -60,9 +60,9 @@ export default function ListingsPage() {
                 className={styles.card}
                 onClick={() => navigate(`/listing/${listing.id}`)}
               >
-                {listing.photoURLs ? (
+                {listing.photoURLs && listing.photoURLs.length > 0 ? (
                   <img
-                    src={listing.photoURLs}
+                    src={listing.photoURLs[0]}
                     alt={listing.title}
                     className={styles.cardImage}
                   />

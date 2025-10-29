@@ -7,6 +7,7 @@ import ListingsPage from './pages/ListingsPage/ListingsPage';
 import MyListingsPage from './pages/MyListingsPage/MyListingsPage';
 import CreateListingPage from './pages/CreateListingPage/CreateListingPage';
 import SwipePage from './pages/SwipePage/SwipePage';
+import MatchesPage from './pages/MatchesPage/MatchesPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -66,6 +67,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SwipePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/matches"
+            element={
+              <ProtectedRoute>
+                <MatchesPage />
               </ProtectedRoute>
             }
           />

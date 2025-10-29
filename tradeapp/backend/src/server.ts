@@ -52,9 +52,11 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes
 import authRoutes from './routes/auth.routes';
 import listingsRoutes from './routes/listings.routes';
+import matchesRoutes from './routes/matches.routes';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingsRoutes);
+app.use('/api/matches', matchesRoutes);
 
 app.get('/api', (req: Request, res: Response) => {
   res.json({ 

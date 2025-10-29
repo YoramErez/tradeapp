@@ -81,9 +81,9 @@ export default function MyListingsPage() {
           <div className={styles.grid}>
             {listings.map((listing) => (
               <div key={listing.id} className={styles.card}>
-                {listing.photoURLs ? (
+                {listing.photoURLs && listing.photoURLs.length > 0 ? (
                   <img
-                    src={listing.photoURLs}
+                    src={listing.photoURLs[0]}
                     alt={listing.title}
                     className={styles.cardImage}
                   />

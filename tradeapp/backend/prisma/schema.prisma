@@ -71,7 +71,7 @@ model Listing {
   description String
   category    String
   condition   String   // New, Good, Used, For parts
-  photoURLs   String? // JSON array stored as string
+  photoURLs   String[]
   status      String   @default("active") // active, pending, completed, deleted
   
   // Location

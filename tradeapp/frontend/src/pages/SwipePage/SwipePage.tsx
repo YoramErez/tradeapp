@@ -7,7 +7,7 @@ interface Item {
   title: string;
   description: string;
   category: string;
-  photoURLs: string | null;
+  photoURLs: string[];
   owner?: {
     name: string;
     avatarURL?: string | null;
@@ -114,8 +114,8 @@ export default function SwipePage() {
         <div className={styles.cardStack}>
           {nextItem && (
             <div className={styles.card}>
-              {nextItem.photoURLs ? (
-                <img src={nextItem.photoURLs} alt={nextItem.title} className={styles.cardImage} />
+              {nextItem.photoURLs && nextItem.photoURLs.length > 0 ? (
+                <img src={nextItem.photoURLs[0]} alt={nextItem.title} className={styles.cardImage} />
               ) : (
                 <div className={styles.noImageContainer}>
                   <span className={styles.noImageText}>📷</span>
@@ -144,8 +144,8 @@ export default function SwipePage() {
             onMouseUp={handleMouseUp}
             onMouseLeave={() => setIsDragging(false)}
           >
-            {currentItem.photoURLs ? (
-              <img src={currentItem.photoURLs} alt={currentItem.title} className={styles.cardImage} />
+            {currentItem.photoURLs && currentItem.photoURLs.length > 0 ? (
+              <img src={currentItem.photoURLs[0]} alt={currentItem.title} className={styles.cardImage} />
             ) : (
               <div className={styles.noImageContainer}>
                 <span className={styles.noImageText}>📷</span>

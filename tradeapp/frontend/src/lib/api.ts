@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { BASE_API_URL } from '../config';
+import { getBaseApiUrl } from '../config';
 
-const API_URL = BASE_API_URL;
+// Get API URL at runtime to ensure correct URL in production
+const API_URL = getBaseApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
@@ -70,6 +71,28 @@ export const listingsApi = {
 
   likeItem: async (id: string) => {
     const response = await api.post(`/listings/${id}/like`);
+    return response.data;
+  },
+};
+
+export const matchesApi = {
+  getMyMatches: async () => {
+    const response = await api.get('/matches');
+    return response.data;
+  },
+  
+  getMatch: async (id: string) => {
+    const response = await api.get(`/matches/${id}`);
+    return response.data;
+  },
+  
+  acceptMatch: async (id: string) => {
+    const response = await api.post(`/matches/${id}/accept`);
+    return response.data;
+  },
+  
+  declineMatch: async (id: string) => {
+    const response = await api.post(`/matches/${id}/decline`);
     return response.data;
   },
 };
